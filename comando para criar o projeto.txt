@@ -1,0 +1,32 @@
+npx express-generator . --no-view //npx é primo do NPM, instale ele ai
+o npx ele instala o express e ja desinstala, já que nao precisamos dele no pc toda hora
+se usasse o npm para instalar ai ficaria na máquina
+
+npm i ou npm install //precisa instalar os pacotes necessários (cria o node_modules)
+crie um .gitignore e mencione o node_modules- nele para que não seja commitado
+npm start //inicia
+http://localhost:3000/ //se nao abrir vá no google e bote 
+
+código 200 é que deu certo
+código 304 é que nao preciso mandar pois nao altero então ja esta no cache
+código 404 é que algo não tem, pode ser a página ou um simples ícone
+
+express é um servidor pré-pronto para usar com o NodeJs
+instalar sql server ou use um online (clever cloud) (https://www.clever-cloud.com/)
+
+
+Sequelize --> ORM (Object-Relational-Mapping) ele vira um banco mais seguro, sendo um mysql não puro
+ele pega nosso objeto e transforma/envia pro banco de dados
+
+npm i mysql2 sequelize //instala o sequelizes
+https://sequelize.org/ -> https://sequelize.org/docs/v6/getting-started/
+alguns instalação e comandos do sequelize
+
+npm i dotenv //precisa para ser usado
+coloca os bagui do .env em e .env.ignore
+require('dotenv').config() //bota isso na primeira linha do app.js
+
+model = representação de uma tabela do BD
+controller = dá a resposta e solicita pra model, onde estão as "regras de negocio"
+
+
