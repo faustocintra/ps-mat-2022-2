@@ -1,0 +1,7 @@
+npx express-generator . ---no-view
+
+npm i = Instalar
+
+npm start 
+
+ORM = Object Relational Mapping
