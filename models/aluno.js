@@ -1,10 +1,10 @@
 const { DataTypes } = require('sequelize');
 const db = require('../config/db')
 
-module.exports = function(){
 
-    const model = db.define('Aluno', {
-    // Model attributes are defined here
+
+const model = db.define('Aluno', {
+// Model attributes are defined here
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -16,7 +16,7 @@ module.exports = function(){
         allowNull: false
     },
     data_nascimento:{
-        type: DATEONLY,
+        type: DataTypes.DATEONLY,
         allowNull: false
     },
     doc_identidade:{
@@ -63,15 +63,14 @@ module.exports = function(){
         type: DataTypes.CHAR(5),
         allowNull: false
     }
-    }, {
+}, {
     tableName: 'alunos' // --
-    });
+});
 
-    model.sync(); // Criar a tabela caso n exista 
+model.sync(); // Criar a tabela caso n exista 
 
-    return model;
+model.exports = model;
 
-}
 
 // Professor
 // const { DataTypes } = require('sequelize');

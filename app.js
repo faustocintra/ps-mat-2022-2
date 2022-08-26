@@ -1,12 +1,12 @@
-require('dotenv').config();
+require('dotenv').config()
 
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-// Conecta ao BD (apenas para teste)
-require('./config/db');
+// Conecta ao BD
+require('./config/db')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -22,7 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-const aluno = require('./routes/aluno');
-app.use('/aluno', aluno);
+const aluno = require('./routes/aluno')
+app.use('/aluno', aluno)
 
 module.exports = app;
