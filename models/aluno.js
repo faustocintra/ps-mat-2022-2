@@ -41,6 +41,10 @@ bairro: {
     type: DataTypes.STRING(50),
     allowNull: false
 },
+municipio: {
+    type: DataTypes.STRING(50),
+    allowNull: false
+},
 uf: {
     type: DataTypes.CHAR(2),
     allowNull: false

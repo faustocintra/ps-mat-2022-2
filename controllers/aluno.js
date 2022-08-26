@@ -11,11 +11,67 @@ const controller = {}       // Objeto vazio
     delete: exclui o registro
 */
 
+controller.create = async(req, res) => {
+    try {
+        await Aluno.create(req.body)
+        // HTTP 201: Created
+        res.status(201).end()
+    }
+    catch(error){
+        console.error(error)
+        // HTTP 500: Internal Server Error
+        res.status(500).send(error)
+    }
+
+}
+
 controller.retrieve = async (req, res) => {
     try {
         const result = await Aluno.findAll()
         // HTTP 200: OK (implícito)
         res.send(result)
+    }
+    catch(error) {
+        console.error(error)
+        // HTTP 500: Internal Server Error
+        res.status(500).send(error)
+    }
+}
+
+controller.retrieveOne = async (req, res) => {
+    try {
+        const result = await Aluno.findByPk(req.params.id)
+
+        if(result){
+        // HTTP 200: OK (implícito)
+        res.send(result)
+        }
+        else {
+            //HTTP 404: Not Fund
+            res.status(404).end()
+        }
+    }
+    catch(error) {
+        console.error(error)
+        // HTTP 500: Internal Server Error
+        res.status(500).send(error)
+    }
+}
+
+controller.update = async (req, res) => {
+    try {
+        const response = await Aluno.update(
+            req.body,
+            {where: {id: req.body.id }} 
+        )
+        
+        if(response){ //Encontrou e atualizou
+            // HTTP204: No content
+            res.status(204).end()
+        }
+        else { //Não encontrou (e não atualizou)
+            res.status(404).end()
+        }
     }
     catch(error) {
         console.error(error)
