@@ -53,4 +53,26 @@ controller.retrieveOne = async (req, res) => {
     }
 }
 
+controller.update = async(req, res) => {
+    try {
+        const response = await Aluno.update(
+            req.body,
+            { where: { id: req.body.id }} 
+        )
+
+        console.log("======", {response})
+
+        if(response[0] >= 0) { // Encontrou e atualizou
+            // HTTP 204: No content
+            res.status(204).end()
+        } else { // Não encontrou (e não atualizou)
+            res.status(404).end()
+        }
+    }
+    catch(error) {
+        console.error(error)
+        res.status(500).send(error)
+    }
+}
+
 module.exports = controller
