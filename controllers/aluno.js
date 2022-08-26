@@ -11,13 +11,27 @@ const controller = {}       // Objeto vazio
     delete: exclui o registro
 */
 
+controller.create = async (req, res) => {
+    try {
+        await Aluno.create(req.body);
+
+        res.status(201).end();
+    }
+    catch (error) {
+        console.error(error);
+        // HTTP 500: Internal Server Error
+        res.status(500).send(error);
+    }
+
+}
+
 controller.retrieve = async (req, res) => {
     try {
         const result = await Aluno.findAll()
         // HTTP 200: OK (implícito)
         res.send(result)
     }
-    catch(error) {
+    catch (error) {
         console.error(error)
         // HTTP 500: Internal Server Error
         res.status(500).send(error)
