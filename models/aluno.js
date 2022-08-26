@@ -69,7 +69,7 @@ const model = db.define('Aluno', {
 
 model.sync(); // Criar a tabela caso n exista 
 
-model.exports = model;
+module.exports = model;
 
 
 // Professor
