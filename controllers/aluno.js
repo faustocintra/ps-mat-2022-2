@@ -62,7 +62,7 @@ controller.update = async(req, res) => {
 
         console.log("======", {response})
 
-        if(response[0] >= 0) { // Encontrou e atualizou
+        if(response[0] > 0) { // Encontrou e atualizou
             // HTTP 204: No content
             res.status(204).end()
         } else { // Não encontrou (e não atualizou)
