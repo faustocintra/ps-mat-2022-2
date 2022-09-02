@@ -10,6 +10,8 @@ router.get('/', controller.retrieve);
 //como um parâmetro chamado id
 router.get('/:id', controller.retriveOne);
 
-router.put('/', controller.update)
+router.patch('/:id', controller.update)
+
+router.delete('/:id', controller.delete)
 
 module.exports = router
