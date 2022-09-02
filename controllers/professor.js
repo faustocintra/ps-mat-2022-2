@@ -1,4 +1,4 @@
-const Aluno = require('../models/aluno')
+const Professor = require('../models/professor')
 
 const controller = {}       // Objeto vazio
 
@@ -13,7 +13,7 @@ const controller = {}       // Objeto vazio
 
 controller.create = async (req, res) => {
     try {
-        await Aluno.create(req.body);
+        await Professor.create(req.body);
 
         res.status(201).end();
     }
@@ -25,8 +25,9 @@ controller.create = async (req, res) => {
 }
 
 controller.retrieve = async (req, res) => {
+
     try {
-        const result = await Aluno.findAll()
+        const result = await Professor.findAll()
         res.send(result)
     }
     catch (error) {
@@ -36,7 +37,7 @@ controller.retrieve = async (req, res) => {
 
 controller.retrieveOne = async (req, res) => {
     try {
-        const result = await Aluno.findByPk(req.params.id)
+        const result = await Professor.findByPk(req.params.id)
 
         if (!result) {
             res.status(404).send()
@@ -52,7 +53,7 @@ controller.retrieveOne = async (req, res) => {
 
 controller.retrieveUpdate = async (req, res) => {
     try {
-        const result = await Aluno.update(
+        const result = await Professor.update(
             req.body,
             {
                 where: {
@@ -73,7 +74,7 @@ controller.retrieveUpdate = async (req, res) => {
 
 controller.delete = async (req, res) => {
     try {
-        const result = await Aluno.destroy(
+        const result = await Professor.destroy(
             {
                 where: {
                     id: req.params.id

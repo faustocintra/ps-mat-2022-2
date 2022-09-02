@@ -23,6 +23,9 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 const aluno = require('./routes/aluno')
+const professor = require('./routes/professor')
+
 app.use('/aluno', aluno)
+app.use('/professor', professor)
 
 module.exports = app;
