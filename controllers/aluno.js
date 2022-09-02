@@ -62,7 +62,28 @@ controller.update = async (req, res) => {
     try {
         const response = await Aluno.update(
             req.body,
-            {where: {id: req.body.id }} 
+            {where: {id: req.params.id }} 
+        )
+        
+        if(response){ //Encontrou e atualizou
+            // HTTP204: No content
+            res.status(204).end()
+        }
+        else { //Não encontrou (e não atualizou)
+            res.status(404).end()
+        }
+    }
+    catch(error) {
+        console.error(error)
+        // HTTP 500: Internal Server Error
+        res.status(500).send(error)
+    }
+}
+
+controller.delete = async (req, res) => {
+    try {
+        const response = await Aluno.destroy(
+            {where: {id: req.params.id }} 
         )
         
         if(response){ //Encontrou e atualizou
