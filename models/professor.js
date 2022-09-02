@@ -39,6 +39,7 @@ const model = db.define('Professor', {
     tableName: 'professores'
 });
 
+
 model.sync(); // criar tabela caso não exista
 
 module.exports = model;
