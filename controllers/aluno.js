@@ -18,7 +18,6 @@ controller.create = async (req, res) => {
         res.status(201).end();
     }
     catch (error) {
-        console.error(error);
         // HTTP 500: Internal Server Error
         res.status(500).send(error);
     }
@@ -31,7 +30,6 @@ controller.retrieve = async (req, res) => {
         res.send(result)
     }
     catch (error) {
-        console.error(error)
         res.status(500).send(error)
     }
 }
@@ -46,7 +44,6 @@ controller.retrieveOne = async (req, res) => {
         res.send(result)
     }
     catch (error) {
-        console.error(error)
         res.status(500).send(error)
     }
 }
@@ -69,7 +66,28 @@ controller.retrieveUpdate = async (req, res) => {
         res.status(204).end();
     }
     catch (error) {
-        console.error(error)
+        res.status(500).send(error)
+    }
+}
+
+controller.delete = async (req, res) => {
+    try {
+        const result = await Aluno.destroy(
+            {
+                where: {
+                    id: req.params.id
+                }
+            }
+        )
+
+        if (!result) {
+            res.status(404).send()
+        }
+
+        res.status(204).end();
+    }
+    catch (error) {
+        console.log(error)
         res.status(500).send(error)
     }
 }
