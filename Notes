@@ -7,4 +7,20 @@ npm start
 ctrl + c = fechar npm
 
 //////////////////////////////////////////////////////
+
+drop table - 
+
+ir no clever cloud
+admin
+
+//////////////////////////////////////////////////////
 ORM = Object Relational Mapping
+
+/////////////////////////////////////////////////////
+
+npm sequelize-cli init
+
+Config.js:
+require('dotenv').config()
+
+const {APP_DB_HOST, APP_DB_NAME, APP_DB_USER, APP_DB_PASS} = process.env
