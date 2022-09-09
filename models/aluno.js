@@ -5,7 +5,7 @@ const model = db.define('Aluno', {
 // Model attributes are defined here
     id: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        // allowNull: false,
         primaryKey: true,
         autoIncrement: true
     },
