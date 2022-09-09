@@ -30,3 +30,12 @@ model = representação de uma tabela do BD
 controller = dá a resposta e solicita pra model, onde estão as "regras de negocio"
 
 
+npx sequelize-cli init
+sistema de login
+
+npx sequelize-cli model:generate --name Usuario --attributes id:integer,nome:string,email:string,hash_senha:string,admin:boolean 
+
+
+npx sequelize-cli migration:generate --name usuario-add-data-nasc
+
+biblioteca bcrypt //biblioteca para ...
