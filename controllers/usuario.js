@@ -16,6 +16,18 @@ const controller = {}       // Objeto vazio
 
 controller.create = async(req, res) => {
     try{
+
+        if(!req.body.senha) return res.status(500).send({
+            message: "Um campo 'Senha' deve ser fornecido"
+        })
+
+        //Gera uma senha hash encriptada
+        req.body.hash_senha = await bcrypt.hash(req.body.senha, 12)
+
+        //Apaga o campo senha para não disparar validação do sequelize
+
+        delete req.body.senha
+
         await Usuario.create(req.body)
         //HTTP 201: Created
         res.status(201).end();
@@ -30,7 +42,7 @@ controller.create = async(req, res) => {
 controller.retriveOne = async (req, res) => {
 
     try {
-        const result = await Usuario.findByPk(req.params.id);
+        const result = await Usuario.scope('semSenha').findByPk(req.params.id);
         // HTTP 200: OK (implícito)
         !result && res.status(404).end;
         res.send(result)
@@ -45,7 +57,7 @@ controller.retriveOne = async (req, res) => {
 
 controller.retrieve = async (req, res) => {
     try {
-        const result = await Usuario.findAll()
+        const result = await Usuario.scope('semSenha').findAll()
         // HTTP 200: OK (implícito)
         res.send(result)
     }
@@ -59,6 +71,12 @@ controller.retrieve = async (req, res) => {
 controller.update = async (req, res) =>{
 
     try {
+        //Se existir senha em req.body, gerar senha criptografada
+        if(req.body.senha){
+            req.body.hash_senha = bcrypt.hash(req.body.senha, 12)
+            delete req.body.senha
+        }
+
         const response = await Usuario.update(
             req.body,
             {where : {id: req.params.id}}
@@ -119,7 +137,13 @@ controller.login = async(req, res) =>{
             if(senhaOK){
 
                 const token = jwt.sign(
-                    {id: usuario.id},
+                    {
+                        id :  usuario.id,
+                        nome: usuario.nome,
+                        email: usuario.email,
+                        admin: usuario.admin,
+                        data_nasc: usuario.data_nasc
+                    },
                     process.env.TOKEN_SECRET,
                     {expiresIn: "8h"}
                 )

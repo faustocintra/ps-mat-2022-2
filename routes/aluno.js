@@ -1,17 +1,19 @@
 const express = require('express')
 const router = express.Router()
-const controller = require('../controllers/aluno')
+const controller = require('../controllers/aluno');
+const verifToken = require('../lib/verif_token');
 
-router.post('/', controller.create);
 
-router.get('/', controller.retrieve);
+router.post('/', verifToken , controller.create);
+
+router.get('/', verifToken, controller.retrieve);
 
 // ":id" é uma parte variável da URI que será interpretada
 //como um parâmetro chamado id
-router.get('/:id', controller.retriveOne);
+router.get('/:id', verifToken , controller.retriveOne);
 
-router.patch('/:id', controller.update)
+router.patch('/:id', verifToken , controller.update)
 
-router.delete('/:id', controller.delete)
+router.delete('/:id', verifToken , controller.delete)
 
 module.exports = router

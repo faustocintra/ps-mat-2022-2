@@ -29,7 +29,12 @@ id:{
     defaultValue: false
   }
 }, {
-    tableName: 'usuarios'
+    tableName: 'usuarios',
+    scopes:{
+      semSenha:{
+        attributes: {exclude: ['hash_senha']}
+      }
+    }
 });
 
 // Cria a tabela no banco de dados, caso ainda não exista
