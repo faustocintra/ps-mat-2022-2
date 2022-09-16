@@ -1,11 +1,12 @@
 const express = require('express')
 const router = express.Router()
 const controller = require('../controllers/aluno')
+const verif_token = require('../lib/verif_token')
 
-router.post('/', controller.create)
-router.get('/', controller.retrieve)
-router.get('/:id', controller.retrieveOne)
-router.patch('/:id', controller.retrieveUpdate)
-router.delete('/:id', controller.delete)
+router.post('/', verif_token, controller.create)
+router.get('/', verif_token, controller.retrieve)
+router.get('/:id', verif_token, controller.retrieveOne)
+router.patch('/:id', verif_token, controller.retrieveUpdate)
+router.delete('/:id', verif_token, controller.delete)
 
 module.exports = router

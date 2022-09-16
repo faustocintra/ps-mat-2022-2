@@ -17,6 +17,13 @@ const controller = {}       // Objeto vazio
 
 controller.create = async (req, res) => {
     try {
+        if (!req.body.senha) return res.status(500).send({
+            message: 'Um campo "senha" deve ser fornecido'
+        })
+
+        req.body.hash_senha = await bcrypt.hash(req.body.senha, 12)
+        delete req.body.senha
+
         await Usuario.create(req.body);
 
         res.status(201).end();
@@ -30,7 +37,7 @@ controller.create = async (req, res) => {
 
 controller.retrieve = async (req, res) => {
     try {
-        const result = await Usuario.findAll()
+        const result = await Usuario.scope("semSenha").findAll()
         res.send(result)
     }
     catch (error) {
@@ -40,7 +47,7 @@ controller.retrieve = async (req, res) => {
 
 controller.retrieveOne = async (req, res) => {
     try {
-        const result = await Usuario.findByPk(req.params.id)
+        const result = await Usuario.scope("semSenha").findByPk(req.params.id)
 
         if (!result) {
             res.status(404).send()
@@ -56,6 +63,12 @@ controller.retrieveOne = async (req, res) => {
 
 controller.retrieveUpdate = async (req, res) => {
     try {
+
+        if (req.body.senha) {
+            req.body.hash_senha = bcrypt.hash(req.body.senha, 12)
+            delete req.body.senha
+        }
+
         const result = await Usuario.update(
             req.body,
             {
@@ -104,7 +117,8 @@ controller.login = async (req, res) => {
         const usuario = await Usuario.findOne({
             where: {
                 email
-            }
+            },
+            // attributes: ['id', 'nome', 'email', 'admin', 'data_nasc']
         })
 
         if (!usuario) {
@@ -113,7 +127,13 @@ controller.login = async (req, res) => {
             const senhaOk = await bcrypt.compare(senha, usuario.hash_senha)
             if (senhaOk) {
                 const token = jwt.sign(
-                    { id: usuario.id },
+                    {
+                        id: usuario.id,
+                        nome: usuario.nome,
+                        email: usuario.email,
+                        admin: usuario.admin,
+                        data_nasc: usuario.data_nasc
+                    },
                     process.env.TOKEN_SECRET,
                     { expiresIn: '8h' })
 
