@@ -16,6 +16,19 @@ const controller = {}       // Objeto vazio
 
 controller.create = async(req, res) => {
     try {
+        // O usuário precisa ter passado um campo chamado
+        // "senha"
+        if(! req.body.senha) return res.status(500).send({
+            message: "Um campo 'senha' deve ser fornecido"
+        })
+        // Encripta a senha aber passada no campo "senha"
+        // gerando o campo "hash_senha"
+        req.body.hash_senha = await bcrypt.hash(req.body.senha, 12)
+        
+        // Apaga o campo "senha" para não disparar validação do
+        // Sequilize
+        delete req.body.senha
+
         await Usuario.create(req.body)
         // HTTP 201: Created
         res.status(201).end()
@@ -29,7 +42,7 @@ controller.create = async(req, res) => {
 
 controller.retrieve = async (req, res) => {
     try {
-        const result = await Usuario.findAll()
+        const result = await Usuario.scope('semSenha').findAll()
         // HTTP 200: OK (implícito)
         res.send(result)
     }
@@ -58,6 +71,13 @@ controller.retrieveOne = async (req, res) => {
 
 controller.update = async(req, res) => {
     try {
+        // Se o campo "senha" existir em req.body
+        // precisamos gerar a versão criptografada
+        // da nova senha
+        if(req.body.senha) {
+            req.body.hash_senha = bcrypt.hash(req.body.senha, 12)
+            delete req.body.senha
+        }
         const response = await Usuario.update(
             req.body,
             { where: { id: req.params.id }} 
@@ -112,9 +132,19 @@ controller.login = async (req, res) => {
 
             if(senhaOk) {
                 // Gera e retorna o token
-                const token = jwt.sign({ id: usuario.id} , process.env.TOKEN_SECRET, { expiresIn: '8h' })
+                const token = jwt.sign(
+                    { 
+                        id: usuario.id,
+                        nome: usuario.nome,
+                        email: usuario.email,
+                        admin: usuario.admin,
+                        data_nasc: usuario.data_nasc
+                    },
+                    process.env.TOKEN_SECRET,
+                    { expiresIn: '8h' }
+                )
 
-                // HTTP 200: OK (impl~icito)
+                // HTTP 200: OK (implicito)
                 res.json({ auth: true, token })
             }
             else { // Senha inválida

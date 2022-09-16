@@ -33,7 +33,10 @@ const model = db.define('Usuario', {
   }
 
 }, {
-    tableName: 'usuarios'
+    tableName: 'usuarios',
+    scopes: {
+      semSenha: { exclude: ['hash_senha'] }
+    }
 });
 
 // Cria a tabela no banco de dados, caso ainda não exista
