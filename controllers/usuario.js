@@ -16,6 +16,19 @@ const controller = {}       // Objeto vazio
 
 controller.create = async(req, res) => {
     try {
+
+        // O usuário precisa ter passado um campo chamado "senha"
+        if (!req.body.senha) return res.status(500).send({
+            message: 'Um campo "senha" deve ser fornecido'
+        })
+
+        // Encripta a senha aberta passada no campo "senha"
+        // gerando o campo "hash_senha"
+        req.body.hash_senha = await bcrypt.hash(req.body.senha, 12)
+
+        // Apaga o campo "senha" para não disparar validação do Sequelize
+        delete req.body.senha
+
         await Usuario.create(req.body)
         // HTTP 201: Created
         res.status(201).end()
@@ -29,7 +42,7 @@ controller.create = async(req, res) => {
 
 controller.retrieve = async (req, res) => {
     try {
-        const result = await Usuario.findAll()
+        const result = await Usuario.scope('semSenha').findAll()
         // HTTP 200: OK (implícito)
         res.send(result)
     }
@@ -42,7 +55,7 @@ controller.retrieve = async (req, res) => {
 
 controller.retrieveOne = async (req, res) => {
     try {
-        const result = await Usuario.findByPk(req.params.id)
+        const result = await Usuario.scope('semSenha').findByPk(req.params.id)
 
         if(result) {
             // HTTP 200: OK (implícito)
@@ -63,6 +76,15 @@ controller.retrieveOne = async (req, res) => {
 controller.update = async (req, res) => {
     //console.log('==============>', req.params.id)
     try {
+
+        // Se o campo "senha" existir em req.body,
+        // precisamos gerar a versão criptografado
+        // da nova senha
+        if (req.body.senha) {
+            req.body.hash_senha = bcrypt.hash(req.body.senha, 12)
+            delete req.body.senha
+        }
+
         const response = await Usuario.update(
             req.body, 
             { where: { id: req.params.id } }
@@ -121,7 +143,13 @@ controller.login = async(req, res) => {
            if (senhaOK) {
                 // Gera e retorna o token
                 const token = jwt.sign(
-                    {id: usuario.id},
+                    {
+                    id: usuario.id,
+                    nome: usuario.nome,
+                    email: usuario.email,
+                    admin: usuario.admin,
+                    data_nasc: usuario.data_nasc
+                    },
                     process.env.TOKEN_SECRET,
                     {expiresIn: '8h'}
                 )
