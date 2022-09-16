@@ -34,7 +34,10 @@ id:{
     allowNull: false
   }
 }, {
-    tableName: 'usuarios' // --
+    tableName: 'usuarios', // --
+    scopes: {
+      semSenha: {excludes: ['hash_senha']}
+    }
 });
 
 model.sync(); // Criar a tabela caso n exista 
