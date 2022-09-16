@@ -39,3 +39,11 @@ npx sequelize-cli model:generate --name Usuario --attributes id:integer,nome:str
 npx sequelize-cli migration:generate --name usuario-add-data-nasc
 
 biblioteca bcrypt //biblioteca para ...
+
+
+uma das formas de colocar o NODEMON (o baui que reseta toda vez que salva ) é:
+troque no package.json
+
+"start": "node ./bin/www"
+para
+"start": "npx nodemon ./bin/www"

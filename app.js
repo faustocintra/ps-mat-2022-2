@@ -30,6 +30,6 @@ app.use('/professor', professor)
 
 
 const usuario = require('./routes/usuarios')
-app.use('/usuarios', usuario)
+app.use('/usuario', usuario)
 
 module.exports = app;
