@@ -28,8 +28,10 @@ app.use('/aluno', aluno)
 const professor = require('./routes/professor')
 app.use('/professor', professor)
 
-
 const usuario = require('./routes/usuarios')
 app.use('/usuario', usuario)
+
+const cursos = require('./routes/cursos')
+app.use('/curso', cursos)
 
 module.exports = app;
