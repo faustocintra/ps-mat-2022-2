@@ -1,3 +1,6 @@
+//brunotorquato013@gmail.com |  abc123
+//
+
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 
@@ -29,6 +32,15 @@ controller.create = async(req, res) => {
         // Apaga o campo "senha" para não disparar validação do Sequelize
         delete req.body.senha
 
+        // Se o usuário logado não for admin, o valor do campo admin do usuário 
+        // que está sendo criado não pode ser true
+        if(req.infoLogado) {
+            if(! req.infoLogado.admin) req.body.admin = false
+        }
+        // Se não tiver o campo infoLogado no req, significa que o acesso foi feito sem token. 
+        // Nesse caso, também não podemos criar um usuário admin
+        else req.body.admin = false
+
         await Usuario.create(req.body)
         // HTTP 201: Created
         res.status(201).end()
@@ -42,7 +54,21 @@ controller.create = async(req, res) => {
 
 controller.retrieve = async (req, res) => {
     try {
-        const result = await Usuario.scope('semSenha').findAll()
+
+        // Se o usuário logado não for admin, o único registro
+        // retornado deve ser o dele mesmo
+        let result
+        if(req.infoLogado.admin){
+            // Retorna todos os usuários cadastrados
+            result = await Usuario.scope('semSenha').findAll()
+        }
+        else {
+            // Não-admins só podem ter acesso ao próprio registro
+            result = await Usuario.scope('semSenha').findAll({
+                where: { id: req.infoLogado.id }
+            })
+        }
+
         // HTTP 200: OK (implícito)
         res.send(result)
     }
@@ -55,6 +81,17 @@ controller.retrieve = async (req, res) => {
 
 controller.retrieveOne = async (req, res) => {
     try {
+
+        console.log('req.infoLogado.admin:', req.infoLogado.admin)
+        console.log('req.infoLogado.id:', req.infoLogado.id, typeof req.infoLogado.id)
+        console.log('req.params.id:', req.params.id, typeof req.params.id)
+
+        // Usuário não-admins só podem ter acesso ao próprio registro
+        if(! (req.infoLogado.admin) && req.infoLogado.id != req.params.id) {
+            // HTTP 403: Forbidden
+            return res.sendStatus(403).end()
+        }
+
         const result = await Usuario.scope('semSenha').findByPk(req.params.id)
 
         if(result) {
@@ -76,6 +113,12 @@ controller.retrieveOne = async (req, res) => {
 controller.update = async (req, res) => {
     //console.log('==============>', req.params.id)
     try {
+
+        // Usuário não-admins só podem ter acesso ao próprio registro
+        if(! (req.infoLogado.admin) && req.infoLogado.id != req.params.id) {
+            // HTTP 403: Forbidden
+            return req.sendStatus(403).end()
+        }
 
         // Se o campo "senha" existir em req.body,
         // precisamos gerar a versão criptografado
@@ -109,6 +152,13 @@ controller.update = async (req, res) => {
 
 controller.delete = async (req, res) => {
     try {
+
+        // Usuário não-admins só podem ter acesso ao próprio registro
+        if(! (req.infoLogado.admin) && req.infoLogado.id != req.params.id) {
+            // HTTP 403: Forbidden
+            return req.sendStatus(403).end()
+        }
+
         const response = await Usuario.destroy(
             { where: { id: req.params.id } }
         )
