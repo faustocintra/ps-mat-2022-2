@@ -1,4 +1,4 @@
-const Aluno = require('../models/aluno')
+const { Aluno, Turma } = require('../models')
 
 const controller = {}       // Objeto vazio
 
@@ -26,7 +26,9 @@ controller.create = async(req, res) => {
 
 controller.retrieve = async (req, res) => {
     try {
-        const result = await Aluno.findAll()
+        const result = await Aluno.findAll({
+            include: { model: Turma, as: 'turma' }
+        })
         // HTTP 200: OK (implícito)
         res.send(result)
     }

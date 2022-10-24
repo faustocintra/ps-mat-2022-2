@@ -1,10 +1,10 @@
-//brunotorquato013@gmail.com |  abc123
-//
+// professor@faustocintra.com.br, abc123
+// estag@empresa.com.br, Deu$
 
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 
-const Usuario = require('../models/usuario.js')
+const { Usuario } = require('../models')
 
 const controller = {}       // Objeto vazio
 
@@ -20,8 +20,9 @@ const controller = {}       // Objeto vazio
 controller.create = async(req, res) => {
     try {
 
-        // O usuário precisa ter passado um campo chamado "senha"
-        if (!req.body.senha) return res.status(500).send({
+        // O usuário precisa ter passado um campo chamado
+        // "senha"
+        if(! req.body.senha) return res.status(500).send({
             message: 'Um campo "senha" deve ser fornecido'
         })
 
@@ -29,16 +30,19 @@ controller.create = async(req, res) => {
         // gerando o campo "hash_senha"
         req.body.hash_senha = await bcrypt.hash(req.body.senha, 12)
 
-        // Apaga o campo "senha" para não disparar validação do Sequelize
+        // Apaga o campo "senha" para não disparar validação do
+        // Sequelize
         delete req.body.senha
 
-        // Se o usuário logado não for admin, o valor do campo admin do usuário 
-        // que está sendo criado não pode ser true
+        // Se o usuário logado não for admin, o valor do campo
+        // admin do usuário que está sendo criado não pode ser
+        // true
         if(req.infoLogado) {
             if(! req.infoLogado.admin) req.body.admin = false
         }
-        // Se não tiver o campo infoLogado no req, significa que o acesso foi feito sem token. 
-        // Nesse caso, também não podemos criar um usuário admin
+        // Se não tiver o campo infoLogado no req, significa que
+        // o acesso foi feito sem token. Nesse caso, também não
+        // podemos criar um usuário admin
         else req.body.admin = false
 
         await Usuario.create(req.body)
@@ -58,7 +62,7 @@ controller.retrieve = async (req, res) => {
         // Se o usuário logado não for admin, o único registro
         // retornado deve ser o dele mesmo
         let result
-        if(req.infoLogado.admin){
+        if(req.infoLogado.admin) {
             // Retorna todos os usuários cadastrados
             result = await Usuario.scope('semSenha').findAll()
         }
@@ -111,19 +115,18 @@ controller.retrieveOne = async (req, res) => {
 }
 
 controller.update = async (req, res) => {
-    //console.log('==============>', req.params.id)
     try {
 
         // Usuário não-admins só podem ter acesso ao próprio registro
         if(! (req.infoLogado.admin) && req.infoLogado.id != req.params.id) {
             // HTTP 403: Forbidden
-            return req.sendStatus(403).end()
+            return res.sendStatus(403).end()
         }
 
         // Se o campo "senha" existir em req.body,
-        // precisamos gerar a versão criptografado
+        // precisamos gerar a versão criptografada
         // da nova senha
-        if (req.body.senha) {
+        if(req.body.senha) {
             req.body.hash_senha = bcrypt.hash(req.body.senha, 12)
             delete req.body.senha
         }
@@ -156,7 +159,7 @@ controller.delete = async (req, res) => {
         // Usuário não-admins só podem ter acesso ao próprio registro
         if(! (req.infoLogado.admin) && req.infoLogado.id != req.params.id) {
             // HTTP 403: Forbidden
-            return req.sendStatus(403).end()
+            return res.sendStatus(403).end()
         }
 
         const response = await Usuario.destroy(
@@ -180,39 +183,41 @@ controller.delete = async (req, res) => {
     }
 }
 
-controller.login = async(req, res) => {
+controller.login = async (req, res) => {
     try {
-        const usuario = await Usuario.findOne({where: {email: req.body.email}})
+        const usuario = await Usuario.findOne({ where: { email: req.body.email }})
 
-        if (!usuario) { // Usuário não existe
+        if(!usuario) {     // Usuário não existe
+            // HTTP 401: Unauthorized
             res.status(401).end()
         }
         else {
-           let senhaOK = await bcrypt.compare(req.body.senha, usuario.hash_senha)
+            let senhaOk = await bcrypt.compare(req.body.senha, usuario.hash_senha)
 
-           if (senhaOK) {
+            if(senhaOk) {
+                console.log({usuario})
                 // Gera e retorna o token
                 const token = jwt.sign(
                     {
-                    id: usuario.id,
-                    nome: usuario.nome,
-                    email: usuario.email,
-                    admin: usuario.admin,
-                    data_nasc: usuario.data_nasc
-                    },
+                        id: usuario.id,
+                        nome: usuario.nome,
+                        email: usuario.email,
+                        admin: usuario.admin,
+                        data_nasc: usuario.data_nasc
+                    }, 
                     process.env.TOKEN_SECRET,
-                    {expiresIn: '8h'}
+                    { expiresIn: '8h' } 
                 )
-                
-                //HTTP 200 - OK
-                res.json({auth: true, token})
+                // HTTP 200: OK (implícito)
+                res.json({ auth: true, token })
             }
-            else { // Senha inválida
+            else {  // Senha inválida
+                // HTTP 401: Unauthorized
                 res.status(401).end()
             }
         }
-    } 
-    catch (error) {  
+    }
+    catch(error) {
         console.error(error)
         // HTTP 500: Internal Server Error
         res.status(500).send(error)

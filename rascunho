@@ -1,1 +1,0 @@
-id: integer,nome:string,email:string,hash_senha:string,admin:boolean
