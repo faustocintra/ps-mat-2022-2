@@ -64,14 +64,11 @@ controller.retrieveOne = async (req, res) => {
 }
 
 controller.update = async (req, res) => {
-    //console.log('==============>', req.params.id)
     try {
         const response = await Turma.update(
             req.body, 
             { where: { id: req.params.id } }
         )
-
-        // console.log("======>", {response})
 
         if(response[0] > 0) {  // Encontrou e atualizou
             // HTTP 204: No content
@@ -93,8 +90,6 @@ controller.delete = async (req, res) => {
         const response = await Turma.destroy(
             { where: { id: req.params.id } }
         )
-
-        // console.log("======>", {response})
 
         if(response) {  // Encontrou e atualizou
             // HTTP 204: No content

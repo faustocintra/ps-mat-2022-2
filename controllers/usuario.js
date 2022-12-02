@@ -86,10 +86,6 @@ controller.retrieve = async (req, res) => {
 controller.retrieveOne = async (req, res) => {
     try {
 
-        console.log('req.infoLogado.admin:', req.infoLogado.admin)
-        console.log('req.infoLogado.id:', req.infoLogado.id, typeof req.infoLogado.id)
-        console.log('req.params.id:', req.params.id, typeof req.params.id)
-
         // Usuário não-admins só podem ter acesso ao próprio registro
         if(! (req.infoLogado.admin) && req.infoLogado.id != req.params.id) {
             // HTTP 403: Forbidden
@@ -136,8 +132,6 @@ controller.update = async (req, res) => {
             { where: { id: req.params.id } }
         )
 
-        // console.log("======>", {response})
-
         if(response[0] > 0) {  // Encontrou e atualizou
             // HTTP 204: No content
             res.status(204).end()
@@ -166,8 +160,6 @@ controller.delete = async (req, res) => {
             { where: { id: req.params.id } }
         )
 
-        // console.log("======>", {response})
-
         if(response) {  // Encontrou e atualizou
             // HTTP 204: No content
             res.status(204).end()
@@ -184,6 +176,7 @@ controller.delete = async (req, res) => {
 }
 
 controller.login = async (req, res) => {
+    
     try {
         const usuario = await Usuario.findOne({ where: { email: req.body.email }})
 
@@ -195,7 +188,6 @@ controller.login = async (req, res) => {
             let senhaOk = await bcrypt.compare(req.body.senha, usuario.hash_senha)
 
             if(senhaOk) {
-                console.log({usuario})
                 // Gera e retorna o token
                 const token = jwt.sign(
                     {
@@ -212,11 +204,8 @@ controller.login = async (req, res) => {
                 //res.json({ auth: true, token })
 
                 // Token retornando em um cookie seguro (HTTP only)
-                res.cookie('app-data', token, {
-                        httpOnly: true,
-                        secure: true,
-                        sameSite: 'None'
-                    }).status(200).json({auth: true})
+                res.setHeader('Set-Cookie', 
+                    `app-data=${token}; Domain=agoravai-bruno.onrender.com; SameSite=None; Secure; Path=/; HttpOnly`).status(200).json({auth: true})
             }
             else {  // Senha inválida
                 // HTTP 401: Unauthorized

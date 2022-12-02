@@ -21,9 +21,10 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+
 const cors = require('cors')
 app.use(cors({
-    origin: 'https://agoravai-bruno-frontend.onrender.com',
+    origin: true,
     credentials: true
 }))
 
